@@ -4,10 +4,6 @@
 #include "params.h"
 #include "arith_rns.h"
 
-#define barret_m1 2147614727UL
-#define barret_m2 2148008063UL
-#define barret_m3 4296016127UL
-
 #if SEC_LEVEL==1
 
 #define k1_q1 24
@@ -75,17 +71,8 @@ uint32_t
 mul_mod_ntt
 (uint32_t a, uint32_t b, uint32_t sel)
 {
-	uint64_t m;
-	/*
-	m = (uint64_t)a*(uint64_t)b;
-
-	return (uint32_t)(barret(m,sel));
-	*/
-	
-	m = montgomery((uint64_t)a*INT64_MOD_Q[sel], sel);
-	m = montgomery(m*b, sel);
-	
-	return (uint32_t)m;
+	uint64_t m = (uint64_t)a * b;
+	return mod_prime(m, sel);
 }
 uint32_t
 mmul_mod_ntt
@@ -103,37 +90,13 @@ montgomery(uint64_t a, uint32_t sel)
 	uint32_t m, q;
 	uint64_t t;
 	q = SIFE_MOD_Q_I[sel];
-	m = -(uint32_t)a*SIFE_MOD_QINV_I[sel];
-	t = (a>>1)+(((uint64_t)m*q + 1UL)>>1);
-	t>>=31;
 	
-	t-=(uint64_t)q;
-	t+=(uint64_t)q & (-(t>>63));
+	m = (uint32_t)a*SIFE_MOD_QINV_I[sel];
+	t = ((uint64_t)m * q) >> 32;
+	t = (a >> 32) - t;
+	if (t < 0)
+		t = t + q;
 	return (uint32_t)t;
-}
-uint32_t 
-barret(uint64_t z, uint32_t sel)
-{
-	uint64_t m;
-	uint64_t q = (uint64_t)SIFE_MOD_Q_I[sel];
-	if(sel == 0)
-	{
-		m = ((z>>(k1_q1+1)) * barret_m1)>>(k1_q1-1);
-		z-= m*q;
-	}
-	else if(sel == 1)
-	{
-		m = ((z>>(k1_q2+1)) * barret_m2)>>(k1_q2-1);
-		z-= m*q;
-	}
-	else
-	{
-		m = ((z>>(k1_q3+1)) * barret_m3)>>(k1_q3-1);
-		z-= m*q;
-	}
-	while(z >= q)
-		z-=q;
-	return (uint32_t)z;
 }
 uint32_t
 mod_prime
