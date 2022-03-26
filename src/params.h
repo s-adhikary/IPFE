@@ -25,8 +25,6 @@ static const uint64_t SIFE_SCALE_M_MOD_Q_I[SIFE_NMODULI] = {908202, 101375442, 1
 extern uint32_t qdata[SIFE_NMODULI][4];
 extern uint32_t psidata[SIFE_NMODULI][6720];
 extern uint32_t psiinvdata[SIFE_NMODULI][6720];
-extern uint32_t psisqrdata[SIFE_NMODULI][HSIFE_N];
-
 
 #elif SEC_LEVEL==2
 
@@ -51,7 +49,6 @@ static const uint64_t SIFE_SCALE_M_MOD_Q_I[SIFE_NMODULI]= {8146, 641184, 4249587
 extern uint32_t qdata[SIFE_NMODULI][4];
 extern uint32_t psidata[SIFE_NMODULI][13440];
 extern uint32_t psiinvdata[SIFE_NMODULI][13440];
-extern uint32_t psisqrdata[SIFE_NMODULI][HSIFE_N];
 
 #endif
 
