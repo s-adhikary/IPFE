@@ -1,3 +1,3 @@
 #ifndef SEC_LEVEL
-#define SEC_LEVEL 1
+#define SEC_LEVEL 2
 #endif

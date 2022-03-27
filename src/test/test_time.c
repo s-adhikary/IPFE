@@ -10,6 +10,7 @@
 #include "../rlwe_sife.h"
 
 #define N_TESTS 5
+#define N_THREADS 8
 
 long long cpucycles(void)
 {
@@ -382,7 +383,7 @@ int test_rlwe_sife_mat_vec()			/*Only matrix-vector multiplication*/
 
 int main()
 {
-	omp_set_num_threads(8);
+	omp_set_num_threads(N_THREADS);
 	
 	printf("TEST VECTOR-VECTOR\n");
 
