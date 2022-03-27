@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <gmp.h>
 #include "params.h"
-#include "NTT.h"
 #include "rlwe_sife.h"
 #include "crt.h"
 #include "sample.h"
@@ -54,7 +53,7 @@ void rlwe_sife_setup(uint32_t mpk[SIFE_L+1][SIFE_NMODULI][SIFE_N], uint32_t msk[
 				memcpy(msk_ntt, msk[i][j], SIFE_N*sizeof(uint32_t));
 				CT_forward(msk_ntt, qdata[j], psidata[j]);
 				CT_forward(e_crt[i][j], qdata[j], psidata[j]);
-				point_mul_(mpk[SIFE_L][j], msk_ntt, mpk[i][j], qdata[j]);
+				point_mul(mpk[SIFE_L][j], msk_ntt, mpk[i][j], qdata[j]);
 				//poly_mul_ntt(mpk[SIFE_L][j], msk[i][j], mpk[i][j], j);
 				poly_add_mod(mpk[i][j], e_crt[i][j], mpk[i][j], j);
 			}
@@ -106,7 +105,7 @@ void rlwe_sife_encrypt(int32_t m[SIFE_L], uint32_t mpk[SIFE_L+1][SIFE_NMODULI][S
 		#pragma omp for nowait
 		for (i = 0; i < SIFE_NMODULI; ++i) {
 			//poly_mul_ntt(mpk[SIFE_L][i], r_crt[i], c[SIFE_L][i], i);
-			point_mul_(mpk[SIFE_L][i], r_crt[i], c[SIFE_L][i], qdata[i]);
+			point_mul(mpk[SIFE_L][i], r_crt[i], c[SIFE_L][i], qdata[i]);
 			GS_reverse(c[SIFE_L][i],qdata[i], psiinvdata[i]);
 			poly_add_mod(c[SIFE_L][i], f_crt[i], c[SIFE_L][i], i);
 		}
@@ -121,7 +120,7 @@ void rlwe_sife_encrypt(int32_t m[SIFE_L], uint32_t mpk[SIFE_L+1][SIFE_NMODULI][S
 		for (i = 0; i < SIFE_L; ++i) {
 			for (j = 0; j < SIFE_NMODULI; ++j) {
 				//poly_mul_ntt(mpk[i][j], r_crt[j], c[i][j], j);
-				point_mul_(mpk[i][j], r_crt[j], c[i][j], qdata[j]);
+				point_mul(mpk[i][j], r_crt[j], c[i][j], qdata[j]);
 				GS_reverse(c[i][j],qdata[j], psiinvdata[j]);
 				poly_add_mod(c[i][j], f_crt2[i][j], c[i][j], j);
 				for (k = 0; k < SIFE_N; ++k) {
@@ -243,7 +242,7 @@ void rlwe_sife_encrypt_vec(int32_t m[SIFE_L][SIFE_N], uint32_t mpk[SIFE_L+1][SIF
 		#pragma omp for
 		for (i = 0; i < SIFE_NMODULI; ++i) {
 			//poly_mul_ntt(mpk[SIFE_L][i], r_crt[i], c[SIFE_L][i], i);
-			point_mul_(mpk[SIFE_L][i], r_crt[i], c[SIFE_L][i], qdata[i]);
+			point_mul(mpk[SIFE_L][i], r_crt[i], c[SIFE_L][i], qdata[i]);
 			GS_reverse(c[SIFE_L][i],qdata[i], psiinvdata[i]);
 			poly_add_mod(c[SIFE_L][i], f_crt[i], c[SIFE_L][i], i);
 		}
@@ -258,7 +257,7 @@ void rlwe_sife_encrypt_vec(int32_t m[SIFE_L][SIFE_N], uint32_t mpk[SIFE_L+1][SIF
 		for (i = 0; i < SIFE_L; ++i) {
 			for (j = 0; j < SIFE_NMODULI; ++j) {
 				//poly_mul_ntt(mpk[i][j], r_crt[j], c[i][j], j);
-				point_mul_(mpk[i][j], r_crt[j], c[i][j], qdata[j]);
+				point_mul(mpk[i][j], r_crt[j], c[i][j], qdata[j]);
 				GS_reverse(c[i][j],qdata[j], psiinvdata[j]);
 				poly_add_mod(c[i][j], f_crt2[i][j], c[i][j], j);
 				poly_add_mod(c[i][j], m_crt[i][j], c[i][j], j);

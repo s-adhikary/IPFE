@@ -88,7 +88,7 @@ uint32_t
 montgomery(uint64_t a, uint32_t sel)
 {
 	uint32_t m, q;
-	uint64_t t;
+	int64_t t;
 	q = SIFE_MOD_Q_I[sel];
 	
 	m = (uint32_t)a*SIFE_MOD_QINV_I[sel];
