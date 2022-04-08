@@ -142,9 +142,6 @@ void rlwe_sife_keygen(const uint32_t y[SIFE_L], const uint32_t msk[SIFE_L][SIFE_
 	{
 		crt_convert_generic(y, y_crt, SIFE_L);
 
-		//#pragma omp single
-		//memset(sk_y, 0, SIFE_NMODULI*SIFE_N*sizeof(uint32_t));
-
 		#pragma omp for collapse(2) schedule(static)
 		for(i=0; i< SIFE_NMODULI; ++i){
 			for(j=0; j< SIFE_N; j++){
@@ -195,7 +192,6 @@ void rlwe_sife_decrypt_gmp(uint32_t c[SIFE_L+1][SIFE_NMODULI][SIFE_N], const uin
 			poly_sub_mod(d_y[i], c0sy[i], d_y[i], i);
 		}
 
-		//crt_reverse(dy, d_y);
 		crt_reverse_gmp(dy, d_y);
 	}
 }

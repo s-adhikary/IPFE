@@ -1,4 +1,4 @@
-.macro mul r0, r1, rl=13, rh=12 , e1=11
+.macro mul r0, r1, rl=13, rh=12 , e1=11				# Multiplication of two 32 bits integers
 
 vpmuludq	%ymm\r0, %ymm\r1, %ymm\rh
 vmovshdup	%ymm\rh, %ymm\rh
@@ -6,11 +6,11 @@ vmovshdup	%ymm\r1, %ymm\e1
 vmovshdup	%ymm\r0, %ymm\rl
 vpmuludq	%ymm\rl, %ymm\e1, %ymm\e1
 vmovshdup	%ymm\e1, %ymm\e1
-vpblendd	$0xAA, %ymm\e1, %ymm\rh, %ymm\rh		#putting high 32 bits of multiplication in rh
-vpmulld		%ymm\r0, %ymm\r1, %ymm\rl				#putting low 32 bits of multiplication in rl
+vpblendd	$0xAA, %ymm\e1, %ymm\rh, %ymm\rh		# putting high 32 bits of multiplication in rh
+vpmulld		%ymm\r0, %ymm\r1, %ymm\rl				# putting low 32 bits of multiplication in rl
 .endm
 
-.macro mont r, q=0, qi=1
+.macro mont r, q=0, qi=1							# Montgomery Reduction
 
 vpmulld		%ymm13, %ymm\qi, %ymm13
 vpmuludq	%ymm13, %ymm\q, %ymm\r

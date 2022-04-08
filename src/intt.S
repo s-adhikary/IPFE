@@ -1,6 +1,18 @@
 #include "seclevel.h"
 .include "arith.inc"
 
+/*
+	The following updates the coefficients of the array
+	as follows 
+		U = a[i]
+		V = a[i + t]
+		a[i] = (U + V)
+		a[i + t] = (U - V)
+	This is the update rule for Gentleman-Sande's inverse
+	NTT. The twiddle factor is later multiplied with a[i+t]
+	after the update is done.
+*/
+
 .macro update 	rn, rl0, rl1, rl2, rl3, rh0, rh1, rh2, rh3
 
 vpaddq		%ymm\rh0, %ymm\rl0, %ymm\rn
@@ -379,6 +391,12 @@ vmovdqa		%ymm10,(64*\off+56)*4(%rdi)
 
 .endm
 
+/*
+	The following function is the Gentleman-Sande's 
+	reverse NTT operation for polynomials of size 
+	n = 2048
+*/
+
 .text
 .global GS_reverse
 GS_reverse:
@@ -494,6 +512,7 @@ ninv_mul64	30
 ninv_mul64	31
 
 ret
+
 #elif SEC_LEVEL==1
 
 .macro level0_5 off
@@ -843,6 +862,12 @@ vmovdqa		%ymm9, (64*\off+48)*4(%rdi)
 vmovdqa		%ymm10,(64*\off+56)*4(%rdi)
 
 .endm
+
+/*
+	The following function is the Gentleman-Sande's 
+	reverse NTT operation for polynomials of size 
+	n = 4096
+*/
 
 .text
 .global GS_reverse
@@ -1574,6 +1599,12 @@ ninv_mul64	14, \i
 ninv_mul64	15, \i
 
 .endm
+
+/*
+	The following function is the Gentleman-Sande's 
+	reverse NTT operation for polynomials of size 
+	n = 8192
+*/
 
 .text
 .global GS_reverse

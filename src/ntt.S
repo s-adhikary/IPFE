@@ -1,6 +1,18 @@
 #include "seclevel.h"
 .include "arith.inc"
 
+/*
+	The following updates the coefficients of the array
+	as follows 
+		U = a[i]
+		V = a[i + t] * (psi)
+		a[i] = (U + V)
+		a[i + t] = (U - V)
+	This is the update rule for Cooly-Tukey's NTT. 
+	The twiddle factor (psi) is multiplied with a[i+t]
+	before update is done.
+*/
+
 .macro update 	rn, rl0, rl1, rl2, rl3, rh0, rh1, rh2, rh3
 
 vpaddq		%ymm\rh0, %ymm\rl0, %ymm\rn
@@ -90,7 +102,6 @@ vmovdqa		(8*\off+768)*4(%rdi),%ymm6
 
 update 	2, 3, 4, 5, 6, 7, 8, 9, 10
 
-#level 1
 vpbroadcastd	4(%rdx),%ymm15
 
 mul			15, 4
@@ -107,7 +118,6 @@ mont 		10
 
 update 	6, 2, 3, 7, 8, 4, 5, 9, 10
 
-#level 2
 vpbroadcastd	12(%rdx),%ymm15
 mul			15, 2
 mont 		2
@@ -137,7 +147,7 @@ vmovdqa		%ymm10,(8*\off+1024+768)*4(%rdi)
 
 .endm
 .macro level3_4 off, i
-#level 3
+
 vmovdqa		(16*\off+256*\i+128)*4(%rdi), %ymm7
 vmovdqa		(16*\off+256*\i+136)*4(%rdi), %ymm8
 vmovdqa		(16*\off+256*\i+192)*4(%rdi), %ymm9
@@ -160,7 +170,6 @@ vmovdqa		(16*\off+256*\i+72)*4(%rdi), %ymm6
 
 update 2, 3, 4, 5, 6, 7, 8, 9, 10
 
-#level 4
 vpbroadcastd	4(%rdx),%ymm15
 mul 		15, 4
 mont 		4
@@ -273,8 +282,6 @@ mont 10
 
 update	6, 2, 3, 7, 8, 4, 5, 9, 10
 
-#6 2 4 5 3 7 9 10
-
 vpbroadcastd	12(%rdx),%ymm15
 
 mul	15, 2
@@ -298,14 +305,10 @@ mont 10
 add			$32, %rdx
 update	8, 6, 4, 3, 9, 2, 5, 7, 10
 
-#8 2 6 5 4 7 3 10 | 9
-
 shuffle4	8, 2, 9, 2
 shuffle4	6, 5, 8, 5
 shuffle4	4, 7, 6, 7
 shuffle4	3,10, 4,10
-
-#9 2 8 5 6 7 4 10 | 3
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -332,14 +335,10 @@ shuffle4	6,10, 8,10
 
 add		$128, %rdx
 
-#4 2 3 5 9 7 8 10 | 6
-
 shuffle2	4, 2, 6, 2
 shuffle2	3, 5, 4, 5
 shuffle2	9, 7, 3, 7
 shuffle2	8,10, 9,10
-
-#6 2 4 5 3 7 9 10 | 8
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -366,14 +365,10 @@ shuffle2	3,10, 4,10
 
 add		$128, %rdx
 
-#9 2 8 5 6 7 4 10 | 3
-
 shuffle1	9, 2, 3, 2
 shuffle1	8, 5, 9, 5
 shuffle1	6, 7, 8, 7
 shuffle1	4,10, 6,10
-
-#3 2 9 5 8 7 6 10 | 4
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -399,7 +394,6 @@ shuffle1	9, 7, 3, 7
 shuffle1	8,10, 9,10
 
 add		$128, %rdx
-#6 2 4 5 3 7 9 10
 
 vmovdqa		%ymm6, (%rdi)
 vmovdqa		%ymm2, 32(%rdi)
@@ -412,6 +406,12 @@ vmovdqa		%ymm10,224(%rdi)
   
 add		$256, %rdi
 .endm
+
+/*
+	The following function is the Cooley-Tukey's 
+	forward NTT operation for polynomials of size 
+	n = 2048
+*/
 
 .text
 .global CT_forward
@@ -496,7 +496,6 @@ vmovdqa		(8*\off+1536)*4(%rdi),%ymm6
 
 update 	2, 3, 4, 5, 6, 7, 8, 9, 10
 
-#level 1
 vpbroadcastd	4(%rdx),%ymm15
 
 mul			15, 4
@@ -513,7 +512,6 @@ mont 		10
 
 update 	6, 2, 3, 7, 8, 4, 5, 9, 10
 
-#level 2
 vpbroadcastd	12(%rdx),%ymm15
 mul			15, 2
 mont 		2
@@ -545,7 +543,6 @@ vmovdqa		%ymm10,(8*\off+3584)*4(%rdi)
 
 .macro level3_5 off, i
 
-#level 3
 vmovdqa		(512*\i+8*\off+256)*4(%rdi), %ymm7
 vmovdqa		(512*\i+8*\off+320)*4(%rdi), %ymm8
 vmovdqa		(512*\i+8*\off+384)*4(%rdi), %ymm9
@@ -568,7 +565,6 @@ vmovdqa		(512*\i+8*\off+192)*4(%rdi), %ymm6
 
 update	2, 3, 4, 5, 6, 7, 8, 9, 10
 
-#level 4
 vpbroadcastd	4(%rdx), %ymm15
 mul		15, 4
 mont	4
@@ -583,7 +579,6 @@ mont	10
 
 update	6, 2, 3, 7, 8, 4, 5, 9, 10
 
-#level 5
 vpbroadcastd	12(%rdx), %ymm15
 mul		15, 2
 mont	2
@@ -663,8 +658,6 @@ mont 10
 
 update	6, 2, 3, 7, 8, 4, 5, 9, 10
 
-#6 2 4 5 3 7 9 10
-
 vpbroadcastd	12(%rdx),%ymm15
 mul	15, 2
 mont 2
@@ -684,14 +677,10 @@ mont 10
 add			$32, %rdx
 update	8, 6, 4, 3, 9, 2, 5, 7, 10
 
-#8 2 6 5 4 7 3 10 | 9
-
 shuffle4	8, 2, 9, 2
 shuffle4	6, 5, 8, 5
 shuffle4	4, 7, 6, 7
 shuffle4	3,10, 4,10
-
-#9 2 8 5 6 7 4 10 | 3
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -718,14 +707,10 @@ shuffle4	6,10, 8,10
 
 add		$128, %rdx
 
-#4 2 3 5 9 7 8 10 | 6
-
 shuffle2	4, 2, 6, 2
 shuffle2	3, 5, 4, 5
 shuffle2	9, 7, 3, 7
 shuffle2	8,10, 9,10
-
-#6 2 4 5 3 7 9 10 | 8
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -752,14 +737,10 @@ shuffle2	3,10, 4,10
 
 add		$128, %rdx
 
-#9 2 8 5 6 7 4 10 | 3
-
 shuffle1	9, 2, 3, 2
 shuffle1	8, 5, 9, 5
 shuffle1	6, 7, 8, 7
 shuffle1	4,10, 6,10
-
-#3 2 9 5 8 7 6 10 | 4
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -785,7 +766,6 @@ shuffle1	9, 7, 3, 7
 shuffle1	8,10, 9,10
 
 add		$128, %rdx
-#6 2 4 5 3 7 9 10
 
 vmovdqa		%ymm6, (%rdi)
 vmovdqa		%ymm2, 32(%rdi)
@@ -798,6 +778,12 @@ vmovdqa		%ymm10,224(%rdi)
   
 add		$256, %rdi
 .endm
+
+/*
+	The following function is the Cooley-Tukey's 
+	forward NTT operation for polynomials of size 
+	n = 4096
+*/
 
 .text
 .global CT_forward
@@ -954,7 +940,6 @@ ret
 
 .macro level0_2 off, i
 
-#level 0
 vmovdqa		(64*\i+8*\off+4096)*4(%rdi),%ymm7
 vmovdqa		(64*\i+8*\off+5120)*4(%rdi),%ymm8
 vmovdqa		(64*\i+8*\off+6144)*4(%rdi),%ymm9
@@ -978,7 +963,6 @@ vmovdqa		(64*\i+8*\off+3072)*4(%rdi),%ymm6
 
 update 	2, 3, 4, 5, 6, 7, 8, 9, 10
 
-#level 1
 vpbroadcastd	4(%rdx),%ymm15
 
 mul			15, 4
@@ -995,7 +979,6 @@ mont 		10
 
 update 	6, 2, 3, 7, 8, 4, 5, 9, 10
 
-#level 2
 vpbroadcastd	12(%rdx),%ymm15
 mul			15, 2
 mont 		2
@@ -1038,7 +1021,6 @@ level0_2	7, \i
 
 .macro level3_5 off, i
 
-#level 3
 vmovdqa		(1024*\i+8*\off+512)*4(%rdi), %ymm7
 vmovdqa		(1024*\i+8*\off+640)*4(%rdi), %ymm8
 vmovdqa		(1024*\i+8*\off+768)*4(%rdi), %ymm9
@@ -1061,7 +1043,6 @@ vmovdqa		(1024*\i+8*\off+384)*4(%rdi), %ymm6
 
 update	2, 3, 4, 5, 6, 7, 8, 9, 10
 
-#level 4
 vpbroadcastd	4(%rdx), %ymm15
 mul		15, 4
 mont	4
@@ -1076,7 +1057,6 @@ mont	10
 
 update	6, 2, 3, 7, 8, 4, 5, 9, 10
 
-#level 5
 vpbroadcastd	12(%rdx), %ymm15
 mul		15, 2
 mont	2
@@ -1211,8 +1191,6 @@ mont 10
 
 update	6, 2, 3, 7, 8, 4, 5, 9, 10
 
-#6 2 4 5 3 7 9 10
-
 add			$4, %rdx
 vpbroadcastd	(%rdx),%ymm15
 
@@ -1240,14 +1218,10 @@ mont 10
 add			$8, %rdx
 update	8, 6, 4, 3, 9, 2, 5, 7, 10
 
-#8 2 6 5 4 7 3 10 | 9
-
 shuffle4	8, 2, 9, 2
 shuffle4	6, 5, 8, 5
 shuffle4	4, 7, 6, 7
 shuffle4	3,10, 4,10
-
-#9 2 8 5 6 7 4 10 | 3
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -1274,14 +1248,10 @@ shuffle4	6,10, 8,10
 
 add		$128, %rdx
 
-#4 2 3 5 9 7 8 10 | 6
-
 shuffle2	4, 2, 6, 2
 shuffle2	3, 5, 4, 5
 shuffle2	9, 7, 3, 7
 shuffle2	8,10, 9,10
-
-#6 2 4 5 3 7 9 10 | 8
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -1308,14 +1278,10 @@ shuffle2	3,10, 4,10
 
 add		$128, %rdx
 
-#9 2 8 5 6 7 4 10 | 3
-
 shuffle1	9, 2, 3, 2
 shuffle1	8, 5, 9, 5
 shuffle1	6, 7, 8, 7
 shuffle1	4,10, 6,10
-
-#3 2 9 5 8 7 6 10 | 4
 
 vmovdqa		(%rdx), %ymm15
 mul	15, 2
@@ -1341,7 +1307,6 @@ shuffle1	9, 7, 3, 7
 shuffle1	8,10, 9,10
 
 add		$128, %rdx
-#6 2 4 5 3 7 9 10
 
 vmovdqa		%ymm6, (%rdi)
 vmovdqa		%ymm2, 32(%rdi)
@@ -1361,6 +1326,12 @@ level7_12
 level7_12
 level7_12
 .endm
+
+/*
+	The following function is the Cooley-Tukey's 
+	forward NTT operation for polynomials of size 
+	n = 8192
+*/
 
 .text
 .global CT_forward

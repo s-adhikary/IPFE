@@ -39,6 +39,12 @@ vmovdqa		%ymm6, (32*\off+24)*4(%rdx)
 
 .endm
 
+/*
+	The following function is defined for 
+	pointwise-multiplication of the coefficients 
+	of two polynomials.
+*/
+
 .text
 .global point_mul
 point_mul:

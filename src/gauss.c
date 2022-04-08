@@ -10,13 +10,13 @@
 /*ceil(DESIRED_SIGMA/sigma_0) sigma_0=sqrt( 1/(2*log(2) ) )*/
 #if SEC_LEVEL==0
 
-#define BINARY_SAMPLER_K_S1 39		//sigma_1
+#define BINARY_SAMPLER_K_S1 39			//sigma_1
 #define BINARY_SAMPLER_K_S2 70025191LL	//sigma_2
 #define BINARY_SAMPLER_K_S3 140050379LL	//sigma_3
 
 #elif SEC_LEVEL==1
 
-#define BINARY_SAMPLER_K_S1 266		//sigma_1
+#define BINARY_SAMPLER_K_S1 266			//sigma_1
 #define BINARY_SAMPLER_K_S2 304214978LL	//sigma_2
 #define BINARY_SAMPLER_K_S3 608429953LL	//sigma_3
 

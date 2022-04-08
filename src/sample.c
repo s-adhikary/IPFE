@@ -80,13 +80,11 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 
 		coeff_t[0]=0;
 		for(j=0;j<8;j++){
-			coeff_t[0]=coeff_t[0] | ((uint64_t) buf[8*i+j]<<(8*j)  );	//64 bit q
+			coeff_t[0]=coeff_t[0] | ((uint64_t) buf[8*i+j]<<(8*j)  );	//taking 64 random bits for 66 bit q
 		}
 
 		mpz_set_ui(coeff_gmp,coeff_t[0]);
-		//mpz_mul_2exp(coeff_gmp, coeff_gmp, 64);
-		//mpz_add_ui(coeff_gmp, coeff_gmp, coeff_t[0]);
-
+		
 		if(mpz_cmp(coeff_gmp, Q_gmp)<=0){
 			
 			poly_a[0][counter]=mpz_mod_ui(r_gmp, coeff_gmp, SIFE_MOD_Q_I[0]);	//set the reduced values mod q1, q2, q3
@@ -104,7 +102,7 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 	while(counter<SIFE_N){
 		aes256ctr_squeezeblocks(small_buf, 1, &state); 
 
-		for(i=0;i<16;i++){
+		for(i=0;i<16;i++){	//one sample requires 8 bytes. Hence as 16*8=128,  maximum 16 samples can be made from 128 bytes
 			coeff_t[0]=0;
 			for(j=0;j<8;j++){
 				coeff_t[0]=coeff_t[0] | ((uint64_t) small_buf[8*i+j]<<(8*j)  );
@@ -162,7 +160,7 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 		for(j=0;j<8;j++){
 			coeff_t[0]=coeff_t[0] | ((uint64_t) buf[10*i+j]<<(8*j)  );
 		}
-		coeff_t[1]=buf[10*i+8] | buf[10*i+9]<<8; //80 bits
+		coeff_t[1]=buf[10*i+8] | buf[10*i+9]<<8; //taking 80 random bits for 86 bit q
 
 		mpz_set_ui(coeff_gmp,coeff_t[1]);
 		mpz_mul_2exp(coeff_gmp, coeff_gmp, 64);
@@ -182,7 +180,7 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 	while(counter<SIFE_N){
 		aes256ctr_squeezeblocks(small_buf, 1, &state); 
 
-		for(i=0;i<12;i++){
+		for(i=0;i<12;i++){	//one sample requires 10 bytes. Hence as 12*10=120,  maximum 12 samples can be made from 128 bytes
 			coeff_t[0]=0;
 			for(j=0;j<8;j++){
 				coeff_t[0]=coeff_t[0] | ((uint64_t) small_buf[10*i+j]<<(8*j)  );
@@ -241,9 +239,9 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 
 		coeff_t[0]=0;
 		for(j=0;j<8;j++){
-			coeff_t[0]=coeff_t[0] | ((uint64_t) buf[12*i+j]<<(8*j)  );
+			coeff_t[0]=coeff_t[0] | ((uint64_t) buf[12*i+j]<<(8*j));
 		}
-		coeff_t[1]=buf[12*i+8] | buf[12*i+9]<<8 | (buf[12*i+10])<<16 | (buf[12*i+11])<<24; //96 bits
+		coeff_t[1]=buf[12*i+8] | buf[12*i+9]<<8 | (buf[12*i+10])<<16 | (buf[12*i+11])<<24; //taking 96 random bits for 101 bit q
 
 		mpz_set_ui(coeff_gmp,coeff_t[1]);
 		mpz_mul_2exp(coeff_gmp, coeff_gmp, 64);
@@ -308,13 +306,11 @@ sample_uniform
 {
 	int i;
 	uint64_t num;
-	//const char Q_string[] ="259809622039819";
 	mpz_t Q_gmp, num_gmp;
 	
 	mpz_init(Q_gmp);
 	mpz_init(num_gmp);
 
-	//mpz_set_str(Q_gmp, Q_string, 10);
 	if(mpz_set_str(Q_gmp, SIFE_Q_str, 10)!=0){
 
 		printf("--ERROR unable to set Q to gmp--\n");
@@ -378,7 +374,7 @@ sample_y
 	uint64_t num;
 	for (i = 0; i < SIFE_L; ++i) {
 		do {
-			num = rand() & (SIFE_B_y-1);
+			num = rand() & (SIFE_B_y-1);	//only works for power-of-two numbers to be changed
 		} while (num >= SIFE_B_y);
 		a[i] = num;
 	}
