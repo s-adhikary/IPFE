@@ -82,7 +82,7 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 		for(j=0;j<8;j++){
 			coeff_t[0]=coeff_t[0] | ((uint64_t) buf[10*i+j]<<(8*j)  );
 		}
-		coeff_t[1]=buf[10*i+8] | buf[10*i+9]<<8 ; //81 bits
+		coeff_t[1]=buf[10*i+8] | buf[10*i+9]<<8 ; //taking 80 random bits for 83 bit q
 
 		mpz_set_ui(coeff_gmp,coeff_t[1]);
 		mpz_mul_2exp(coeff_gmp, coeff_gmp, 64);
@@ -102,12 +102,12 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 	while(counter<SIFE_N){
 		aes256ctr_squeezeblocks(small_buf, 1, &state); 
 
-		for(i=0;i<11;i++){
+		for(i=0;i<12;i++){	//one sample requires 10 bytes. Hence as 12*10=120,  maximum 12 samples can be made from 128 bytes
 			coeff_t[0]=0;
 			for(j=0;j<8;j++){
 				coeff_t[0]=coeff_t[0] | ((uint64_t) small_buf[10*i+j]<<(8*j)  );
 			}
-			coeff_t[1]=small_buf[10*i+8] | small_buf[10*i+9]<<8; //81 bits
+			coeff_t[1]=small_buf[10*i+8] | small_buf[10*i+9]<<8; //80 bits
 
 			mpz_set_ui(coeff_gmp,coeff_t[1]);
 			mpz_mul_2exp(coeff_gmp, coeff_gmp, 64);
@@ -161,9 +161,9 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 
 		coeff_t[0]=0;
 		for(j=0;j<8;j++){
-			coeff_t[0]=coeff_t[0] | ((uint64_t) buf[10*i+j]<<(8*j)  );
+			coeff_t[0]=coeff_t[0] | ((uint64_t) buf[10*i+j]<<(8*j) );
 		}
-		coeff_t[1]=buf[10*i+8] | buf[10*i+9]<<8; //86 bits
+		coeff_t[1]=buf[10*i+8] | buf[10*i+9]<<8; //taking 80 random bits for 85 bit q
 		
 		
 		mpz_set_ui(coeff_gmp,coeff_t[1]);
@@ -179,8 +179,6 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 
 			counter++;	//increase the counter
 
-
-
 		}
 
 	}
@@ -188,12 +186,12 @@ void sample_polya(unsigned char *seed, uint32_t poly_a[SIFE_NMODULI][SIFE_N])
 	while(counter<SIFE_N){
 		aes256ctr_squeezeblocks(small_buf, 1, &state); 
 
-		for(i=0;i<11;i++){
+		for(i=0;i<12;i++){	//one sample requires 10 bytes. Hence as 10*12=120,  maximum 12 samples can be made from 128 bytes
 			coeff_t[0]=0;
 			for(j=0;j<8;j++){
 				coeff_t[0]=coeff_t[0] | ((uint64_t) small_buf[11*i+j]<<(8*j)  );
 			}
-			coeff_t[1]=small_buf[10*i+8] | small_buf[10*i+9]<<8; //81 bits
+			coeff_t[1]=small_buf[10*i+8] | small_buf[10*i+9]<<8; //80 bits
 
 			mpz_set_ui(coeff_gmp,coeff_t[1]);
 			mpz_mul_2exp(coeff_gmp, coeff_gmp, 64);

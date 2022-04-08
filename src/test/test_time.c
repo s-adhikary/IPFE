@@ -356,19 +356,12 @@ int test_rlwe_sife_mat_vec()			/*Only matrix-vector multiplication*/
 		printf("TEST %lu DONE!\n\n", i);
 	}
 
-	printf("Repeat is : %d\n",N_TESTS);
-	
-	printf("\n%lu \n", CLOCK_su/N_TESTS);
-	printf("%lu \n",CLOCK_enc/N_TESTS);
-	printf("%lu \n",CLOCK_kp/N_TESTS);
-	printf("%lu \n",CLOCK_dec/N_TESTS);
-	/*
 	printf("Average times setup: \t \t %lu \n", CLOCK_su/N_TESTS);
 	printf("Average times enc: \t \t %lu \n",CLOCK_enc/N_TESTS);
 	printf("Average times key_pair: \t %lu \n",CLOCK_kp/N_TESTS);
 	printf("Average times dec: \t \t %lu \n",CLOCK_dec/N_TESTS);
 	printf("Average times extract: \t \t %lu \n",CLOCK_extract/N_TESTS);
-	*/
+
 	for(i=0;i<SIFE_N;i++){
 		mpz_clear(dy[i]);
 	}
@@ -387,10 +380,10 @@ int main()
 	
 	printf("TEST VECTOR-VECTOR\n");
 
-	//test_rlwe_sife_vec_vec();
+	test_rlwe_sife_vec_vec();
 
 
-	printf("TEST MATRIX-VECTOR\n");
+	printf("\n\nTEST MATRIX-VECTOR\n");
 
 	test_rlwe_sife_mat_vec();
 
