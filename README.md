@@ -11,17 +11,18 @@ Software implementation of inner product functional encryption based on Ring-LWE
 
 **GMP library** It is necessary for the mutiprecission arithmetic during the decomposition of the polynomials into the residue number system where all operations are performed, as well as to retrieve the final result after decryption. On Linux systems it can be installed as:
 ```
-> apt-get install libgmp3-dev
+apt-get install libgmp3-dev
 ```
 **Stack size** The library requires a high amount of stack. In Linux systems the stack size is usually limited to 8192 kb but it can be checked and extended as:
 ```
-> ulimit -a
-
-> ulimit -s unlimited
+ulimit -a
+```
+```
+ulimit -s unlimited
 ```
 **AVX-2** The library requires a system that supports AVX-2 instructions. One can check if the system supports avx-2 instructions or not by checking:
 ```
-> cat /proc/cpuinfo
+cat /proc/cpuinfo
 ```
 If the ```flags``` contains ```avx2``` flag then the library can be used in the system. 
 
