@@ -1,5 +1,5 @@
 # Inner-Product Functional Encryption from Ring-Learning With Errors
-Library for software implementation of ring-LWE based inner-production functional encryption (IPFE) 
+Library for software implementation of ring-LWE based inner-production functional encryption (IPFE). This library is modified to support the message size of 2048.
 
 ## Description
 Functional encryption (FE) is one of the three components of Computation on Encrypted Data (COED) paradigm. FE allows computing functions on data while maintaining privace of the data. For a given <img src="https://latex.codecogs.com/svg.image?n">*-dimensional* private integer vector <img src="https://latex.codecogs.com/svg.image?\bf{X=(x_0,&space;x_1,\cdots,&space;x_{n-1})}"> and a corresponding known weight vector <img src="https://latex.codecogs.com/svg.image?\bf{Y=(y_0,&space;y_1,\cdots,&space;y_{n-1})}"> and a *secret key* <img src="https://latex.codecogs.com/svg.image?\bf{sk}"> an IPFE scheme only returns the final inner product of <img src="https://latex.codecogs.com/svg.image?\bf{x}"> and <img src="https://latex.codecogs.com/svg.image?\bf{y}"> *i.e* <img src="https://latex.codecogs.com/svg.image?\bf{F_{sk}(X,Y)=\Sigma_i&space;x_i\cdot&space;y_i}">, without revealing anything about vector <img src="https://latex.codecogs.com/svg.image?\bf{X}">.
